@@ -34,7 +34,6 @@ header {
   background: white;
   border-radius: 10px;
   padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .card img {
@@ -52,7 +51,7 @@ header {
   border-radius: 5px;
 }
 
-.cart {
+.cart-btn {
   position: fixed;
   bottom: 10px;
   right: 10px;
@@ -60,6 +59,26 @@ header {
   color: white;
   padding: 10px;
   border-radius: 50px;
+}
+
+/* Popup Cart */
+.cart-popup {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  max-height: 70%;
+  overflow: auto;
+  display: none;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 10px;
+}
+
+.item {
+  border-bottom: 1px solid #ddd;
+  padding: 5px;
 }
 
 input, select {
@@ -76,23 +95,40 @@ input, select {
 
 <div class="container">
 
-<!-- ADMIN -->
 <h3>Tambah Produk (Admin)</h3>
 <input id="nama" placeholder="Nama Produk">
 <input id="harga" placeholder="Harga">
 <input id="gambar" placeholder="Link Gambar">
+
+<select id="ukuran">
+  <option value="S">S</option>
+  <option value="L">L</option>
+  <option value="XL">XL</option>
+  <option value="XXL">XXL</option>
+</select>
+
+<input id="warna" placeholder="Warna (contoh: hitam, putih)">
+
 <button class="btn" onclick="tambahProduk()">Tambah Produk</button>
 
 <hr>
 
-<!-- KATALOG -->
 <h3>Katalog</h3>
 <div class="grid" id="produkList"></div>
 
 </div>
 
-<!-- CART -->
-<div class="cart" onclick="checkout()">🛒 Checkout (<span id="totalItem">0</span>)</div>
+<!-- CART BUTTON -->
+<div class="cart-btn" onclick="bukaCart()">
+🛒 (<span id="totalItem">0</span>)
+</div>
+
+<!-- CART POPUP -->
+<div class="cart-popup" id="cartPopup">
+<h3>Keranjang</h3>
+<div id="cartList"></div>
+<button class="btn" onclick="checkout()">Checkout</button>
+</div>
 
 <script>
 let produk = [];
@@ -102,8 +138,10 @@ function tambahProduk() {
   let nama = document.getElementById("nama").value;
   let harga = document.getElementById("harga").value;
   let gambar = document.getElementById("gambar").value;
+  let ukuran = document.getElementById("ukuran").value;
+  let warna = document.getElementById("warna").value;
 
-  produk.push({ nama, harga, gambar });
+  produk.push({ nama, harga, gambar, ukuran, warna });
   tampilkanProduk();
 }
 
@@ -115,6 +153,7 @@ function tampilkanProduk() {
         <img src="${p.gambar}">
         <h4>${p.nama}</h4>
         <p>Rp ${p.harga}</p>
+        <small>${p.ukuran} | ${p.warna}</small>
         <button class="btn" onclick="tambahCart(${i})">Tambah</button>
       </div>
     `;
@@ -125,12 +164,37 @@ function tampilkanProduk() {
 function tambahCart(i) {
   cart.push(produk[i]);
   document.getElementById("totalItem").innerText = cart.length;
+  tampilkanCart();
+}
+
+function tampilkanCart() {
+  let html = "";
+  cart.forEach((c, i) => {
+    html += `
+      <div class="item">
+        ${c.nama} - ${c.ukuran} - ${c.warna} - Rp ${c.harga}
+        <button onclick="hapusItem(${i})">❌</button>
+      </div>
+    `;
+  });
+  document.getElementById("cartList").innerHTML = html;
+}
+
+function hapusItem(i) {
+  cart.splice(i,1);
+  document.getElementById("totalItem").innerText = cart.length;
+  tampilkanCart();
+}
+
+function bukaCart() {
+  let popup = document.getElementById("cartPopup");
+  popup.style.display = popup.style.display === "block" ? "none" : "block";
 }
 
 function checkout() {
   let text = "Pesanan:%0A";
   cart.forEach((c, i) => {
-    text += `${i+1}. ${c.nama} - Rp ${c.harga}%0A`;
+    text += `${i+1}. ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}%0A`;
   });
 
   window.open("https://wa.me/6282285712293?text=" + text);
