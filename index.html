@@ -48,10 +48,6 @@ header {
   font-size: 13px;
 }
 
-.btn:hover {
-  background: #0056b3;
-}
-
 .cart-btn {
   position: fixed;
   bottom: 15px;
@@ -60,10 +56,8 @@ header {
   color: white;
   padding: 10px 14px;
   border-radius: 30px;
-  font-size: 14px;
 }
 
-/* Overlay */
 .overlay {
   position: fixed;
   top: 0;
@@ -74,7 +68,6 @@ header {
   background: rgba(0,0,0,0.5);
 }
 
-/* Cart */
 .cart-popup {
   position: fixed;
   bottom: 0;
@@ -100,7 +93,6 @@ header {
   padding: 5px 10px;
   float: right;
   border-radius: 5px;
-  font-size: 12px;
 }
 
 input, select {
@@ -117,17 +109,17 @@ input, select {
 
 <div class="container">
 
-<h3>Tambah Produk (Admin)</h3>
-<input id="barcode" placeholder="Masukkan angka barcode">
+<h3>Tambah Produk</h3>
+<input id="barcode" placeholder="Barcode">
 <input id="nama" placeholder="Nama Produk">
 <input id="harga" placeholder="Harga">
 <input id="gambar" placeholder="Link Gambar">
 
 <select id="ukuran">
-  <option>S</option>
-  <option>L</option>
-  <option>XL</option>
-  <option>XXL</option>
+<option>S</option>
+<option>L</option>
+<option>XL</option>
+<option>XXL</option>
 </select>
 
 <input id="warna" placeholder="Warna">
@@ -141,15 +133,12 @@ input, select {
 
 </div>
 
-<!-- CART BUTTON -->
 <div class="cart-btn" onclick="toggleCart()">
 🛒 (<span id="totalItem">0</span>)
 </div>
 
-<!-- OVERLAY -->
 <div class="overlay" id="overlay" onclick="tutupCart()"></div>
 
-<!-- CART POPUP -->
 <div class="cart-popup" id="cartPopup">
 <button class="close-btn" onclick="tutupCart()">Tutup</button>
 <h3>Keranjang</h3>
@@ -160,149 +149,134 @@ input, select {
 <button class="btn" onclick="printStruk()">🧾 Print</button>
 </div>
 
-<script>
-let produk = [];
-let cart = [];
-
-// TAMBAH PRODUK
-function tambahProduk() {
-  let barcode = document.getElementById("barcode").value;
-  let nama = document.getElementById("nama").value;
-  let harga = document.getElementById("harga").value;
-  let gambar = document.getElementById("gambar").value;
-  let ukuran = document.getElementById("ukuran").value;
-  let warna = document.getElementById("warna").value;
-
-  produk.push({ barcode, nama, harga, gambar, ukuran, warna });
-  tampilkanProduk();
-
-  // reset form
-  document.getElementById("barcode").value = "";
-  document.getElementById("nama").value = "";
-  document.getElementById("harga").value = "";
-  document.getElementById("gambar").value = "";
-  document.getElementById("warna").value = "";
-}
-
-// TAMPILKAN PRODUK
-function tampilkanProduk() {
-  let html = "";
-  produk.forEach((p, i) => {
-    html += `
-      <div class="card">
-        <img src="${p.gambar}">
-        <h4>${p.nama}</h4>
-        <svg id="barcode${i}"></svg>
-        <p>Rp ${p.harga}</p>
-        <small>${p.ukuran} | ${p.warna}</small>
-        <button class="btn" onclick="tambahCart(${i})">Tambah</button>
-      </div>
-    `;
-  });
-
-  document.getElementById("produkList").innerHTML = html;
-
-  produk.forEach((p, i) => {
-    if(p.barcode){
-      JsBarcode("#barcode"+i, p.barcode, { height: 40 });
-    }
-  });
-}
-
-// TAMBAH CART
-function tambahCart(i) {
-  cart.push(produk[i]);
-  document.getElementById("totalItem").innerText = cart.length;
-  tampilkanCart();
-}
-
-// TAMPILKAN CART
-function tampilkanCart() {
-  let html = "";
-  cart.forEach((c, i) => {
-    html += `
-      <div class="item">
-        ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}
-        <br><svg id="cartbarcode${i}"></svg>
-        <button onclick="hapusItem(${i})">❌</button>
-      </div>
-    `;
-  });
-
-  document.getElementById("cartList").innerHTML = html;
-
-  cart.forEach((c, i) => {
-    if(c.barcode){
-      JsBarcode("#cartbarcode"+i, c.barcode, { height: 30 });
-    }
-  });
-}
-
-// HAPUS ITEM
-function hapusItem(i) {
-  cart.splice(i,1);
-  document.getElementById("totalItem").innerText = cart.length;
-  tampilkanCart();
-}
-
-// BUKA CART
-function toggleCart() {
-  document.getElementById("cartPopup").style.display = "block";
-  document.getElementById("overlay").style.display = "block";
-}
-
-// TUTUP CART
-function tutupCart() {
-  document.getElementById("cartPopup").style.display = "none";
-  document.getElementById("overlay").style.display = "none";
-}
-
-// CHECKOUT
-function checkout() {
-  let text = "Pesanan:%0A";
-  cart.forEach((c, i) => {
-    text += `${i+1}. ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}%0A`;
-  });
-
-  window.open("https://wa.me/62XXXXXXXXXX?text=" + text);
-}
-
-// PRINT STRUK
-function printStruk() {
-  let total = 0;
-  let isi = "<h3>TOKO PAKAIAN</h3><hr>";
-
-  cart.forEach((c) => {
-    isi += `${c.nama}<br>`;
-    isi += `${c.ukuran}/${c.warna} - Rp ${c.harga}<br>`;
-    isi += `${c.barcode}<br><br>`;
-    total += parseInt(c.harga);
-  });
-
-  isi += "<hr><b>Total: Rp " + total + "</b>";
-
-  let win = window.open("", "", "width=300,height=500");
-  win.document.write(isi);
-  win.print();
-}
-</script>
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSy....",
+  apiKey: "AIzaSyDruQxhQfsmsDAubunSrohBX9ZALlXtp5E",
   authDomain: "toko-pakaian-91050.firebaseapp.com",
   projectId: "toko-pakaian-91050",
-  storageBucket: "toko-pakaian-91050.appspot.com",
-  messagingSenderId: "418943349139",
-  appId: "1:418943349139:web:xxxx"
 };
 
-// WAJIB INI 🔥
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+let cart = [];
+
+// TAMBAH PRODUK
+function tambahProduk() {
+  db.collection("produk").add({
+    barcode: barcode.value,
+    nama: nama.value,
+    harga: harga.value,
+    gambar: gambar.value,
+    ukuran: ukuran.value,
+    warna: warna.value
+  });
+
+  barcode.value="";
+  nama.value="";
+  harga.value="";
+  gambar.value="";
+  warna.value="";
+}
+
+// TAMPILKAN PRODUK
+function tampilkanProduk() {
+  db.collection("produk").onSnapshot((snapshot)=>{
+    let html="";
+
+    snapshot.forEach(doc=>{
+      let p = doc.data();
+
+      html+=`
+      <div class="card">
+        <img src="${p.gambar}">
+        <h4>${p.nama}</h4>
+        <svg id="b${doc.id}"></svg>
+        <p>Rp ${p.harga}</p>
+        <small>${p.ukuran} | ${p.warna}</small>
+        <button class="btn" onclick='tambahCart(${JSON.stringify(p)})'>Tambah</button>
+      </div>`;
+    });
+
+    produkList.innerHTML = html;
+
+    snapshot.forEach(doc=>{
+      let p = doc.data();
+      if(p.barcode){
+        JsBarcode("#b"+doc.id, p.barcode);
+      }
+    });
+  });
+}
+
+// CART
+function tambahCart(p){
+  cart.push(p);
+  totalItem.innerText = cart.length;
+  tampilkanCart();
+}
+
+function tampilkanCart(){
+  let html="";
+  cart.forEach((c,i)=>{
+    html+=`
+    <div class="item">
+      ${c.nama} - Rp ${c.harga}
+      <button onclick="hapusItem(${i})">❌</button>
+    </div>`;
+  });
+  cartList.innerHTML = html;
+}
+
+function hapusItem(i){
+  cart.splice(i,1);
+  totalItem.innerText = cart.length;
+  tampilkanCart();
+}
+
+function toggleCart(){
+  cartPopup.style.display="block";
+  overlay.style.display="block";
+}
+
+function tutupCart(){
+  cartPopup.style.display="none";
+  overlay.style.display="none";
+}
+
+// CHECKOUT
+function checkout(){
+  let text="Pesanan:%0A";
+  cart.forEach((c,i)=>{
+    text+=`${i+1}. ${c.nama} - Rp ${c.harga}%0A`;
+  });
+  window.open("https://wa.me/6282285712293?text="+text);
+}
+
+// PRINT
+function printStruk(){
+  let total=0;
+  let isi="TOKO PAKAIAN<hr>";
+
+  cart.forEach(c=>{
+    isi+=`${c.nama} - Rp ${c.harga}<br>`;
+    total+=parseInt(c.harga);
+  });
+
+  isi+=`<hr>Total: Rp ${total}`;
+
+  let w=window.open("","","width=300,height=500");
+  w.document.write(isi);
+  w.print();
+}
+
+// LOAD DATA
+tampilkanProduk();
 </script>
+
 </body>
 </html>
