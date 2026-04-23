@@ -286,6 +286,23 @@ function printStruk() {
   win.print();
 }
 </script>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSy....",
+  authDomain: "toko-pakaian-91050.firebaseapp.com",
+  projectId: "toko-pakaian-91050",
+  storageBucket: "toko-pakaian-91050.appspot.com",
+  messagingSenderId: "418943349139",
+  appId: "1:418943349139:web:xxxx"
+};
+
+// WAJIB INI 🔥
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 </body>
 </html>
