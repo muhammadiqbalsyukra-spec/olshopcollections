@@ -6,23 +6,10 @@
 <title>Toko Pakaian</title>
 
 <style>
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f5f5f5;
-}
+body { font-family: Arial; margin: 0; background: #f5f5f5; }
+header { background: black; color: white; padding: 15px; text-align: center; }
 
-header {
-  background: black;
-  color: white;
-  padding: 15px;
-  text-align: center;
-  font-size: 20px;
-}
-
-.container {
-  padding: 10px;
-}
+.container { padding: 10px; }
 
 .grid {
   display: grid;
@@ -61,18 +48,14 @@ header {
   border-radius: 50px;
 }
 
-/* Popup Cart */
 .cart-popup {
   position: fixed;
   bottom: 0;
-  left: 0;
   width: 100%;
   background: white;
   max-height: 70%;
   overflow: auto;
   display: none;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
   padding: 10px;
 }
 
@@ -96,18 +79,19 @@ input, select {
 <div class="container">
 
 <h3>Tambah Produk (Admin)</h3>
+<input id="barcode" placeholder="Barcode">
 <input id="nama" placeholder="Nama Produk">
 <input id="harga" placeholder="Harga">
 <input id="gambar" placeholder="Link Gambar">
 
 <select id="ukuran">
-  <option value="S">S</option>
-  <option value="L">L</option>
-  <option value="XL">XL</option>
-  <option value="XXL">XXL</option>
+  <option>S</option>
+  <option>L</option>
+  <option>XL</option>
+  <option>XXL</option>
 </select>
 
-<input id="warna" placeholder="Warna (contoh: hitam, putih)">
+<input id="warna" placeholder="Warna">
 
 <button class="btn" onclick="tambahProduk()">Tambah Produk</button>
 
@@ -118,16 +102,13 @@ input, select {
 
 </div>
 
-<!-- CART BUTTON -->
-<div class="cart-btn" onclick="bukaCart()">
-🛒 (<span id="totalItem">0</span>)
-</div>
+<div class="cart-btn" onclick="bukaCart()">🛒 (<span id="totalItem">0</span>)</div>
 
-<!-- CART POPUP -->
 <div class="cart-popup" id="cartPopup">
 <h3>Keranjang</h3>
 <div id="cartList"></div>
-<button class="btn" onclick="checkout()">Checkout</button>
+<button class="btn" onclick="checkout()">Checkout WA</button>
+<button class="btn" onclick="printStruk()">🧾 Print Struk</button>
 </div>
 
 <script>
@@ -135,13 +116,14 @@ let produk = [];
 let cart = [];
 
 function tambahProduk() {
+  let barcode = document.getElementById("barcode").value;
   let nama = document.getElementById("nama").value;
   let harga = document.getElementById("harga").value;
   let gambar = document.getElementById("gambar").value;
   let ukuran = document.getElementById("ukuran").value;
   let warna = document.getElementById("warna").value;
 
-  produk.push({ nama, harga, gambar, ukuran, warna });
+  produk.push({ barcode, nama, harga, gambar, ukuran, warna });
   tampilkanProduk();
 }
 
@@ -152,6 +134,7 @@ function tampilkanProduk() {
       <div class="card">
         <img src="${p.gambar}">
         <h4>${p.nama}</h4>
+        <small>${p.barcode}</small>
         <p>Rp ${p.harga}</p>
         <small>${p.ukuran} | ${p.warna}</small>
         <button class="btn" onclick="tambahCart(${i})">Tambah</button>
@@ -172,7 +155,8 @@ function tampilkanCart() {
   cart.forEach((c, i) => {
     html += `
       <div class="item">
-        ${c.nama} - ${c.ukuran} - ${c.warna} - Rp ${c.harga}
+        ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}<br>
+        <small>${c.barcode}</small>
         <button onclick="hapusItem(${i})">❌</button>
       </div>
     `;
@@ -196,8 +180,27 @@ function checkout() {
   cart.forEach((c, i) => {
     text += `${i+1}. ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}%0A`;
   });
-
   window.open("https://wa.me/6282285712293?text=" + text);
+}
+
+function printStruk() {
+  let total = 0;
+  let isi = "<h3>TOKO PAKAIAN</h3>";
+  isi += "<hr>";
+
+  cart.forEach((c) => {
+    isi += `${c.nama}<br>`;
+    isi += `${c.ukuran}/${c.warna} - Rp ${c.harga}<br>`;
+    isi += `<small>${c.barcode}</small><br><br>`;
+    total += parseInt(c.harga);
+  });
+
+  isi += "<hr>";
+  isi += `<b>Total: Rp ${total}</b>`;
+
+  let win = window.open("", "", "width=300,height=500");
+  win.document.write(isi);
+  win.print();
 }
 </script>
 
