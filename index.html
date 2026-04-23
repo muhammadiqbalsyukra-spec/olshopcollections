@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Toko Pakaian</title>
 
-<!-- LIBRARY BARCODE -->
+<!-- Barcode -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
 <style>
 body { font-family: Arial; margin: 0; background: #f5f5f5; }
 
 header {
-  background: black;
+  background: #111;
   color: white;
   padding: 15px;
   text-align: center;
@@ -38,26 +38,43 @@ header {
 }
 
 .btn {
-  background: black;
+  background: #007bff;
   color: white;
-  padding: 8px;
+  padding: 6px;
   border: none;
   width: 100%;
   margin-top: 5px;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.btn:hover {
+  background: #0056b3;
 }
 
 .cart-btn {
   position: fixed;
-  bottom: 10px;
-  right: 10px;
-  background: black;
+  bottom: 15px;
+  right: 15px;
+  background: #28a745;
   color: white;
-  padding: 10px;
-  border-radius: 50px;
+  padding: 10px 14px;
+  border-radius: 30px;
+  font-size: 14px;
 }
 
-/* Popup */
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background: rgba(0,0,0,0.5);
+}
+
+/* Cart */
 .cart-popup {
   position: fixed;
   bottom: 0;
@@ -66,12 +83,24 @@ header {
   max-height: 70%;
   overflow: auto;
   display: none;
-  padding: 10px;
+  padding: 15px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .item {
   border-bottom: 1px solid #ddd;
-  padding: 5px;
+  padding: 8px;
+}
+
+.close-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  float: right;
+  border-radius: 5px;
+  font-size: 12px;
 }
 
 input, select {
@@ -112,12 +141,21 @@ input, select {
 
 </div>
 
-<!-- CART -->
-<div class="cart-btn" onclick="toggleCart()">🛒 (<span id="totalItem">0</span>)</div>
+<!-- CART BUTTON -->
+<div class="cart-btn" onclick="toggleCart()">
+🛒 (<span id="totalItem">0</span>)
+</div>
 
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="tutupCart()"></div>
+
+<!-- CART POPUP -->
 <div class="cart-popup" id="cartPopup">
+<button class="close-btn" onclick="tutupCart()">Tutup</button>
 <h3>Keranjang</h3>
+
 <div id="cartList"></div>
+
 <button class="btn" onclick="checkout()">Checkout WA</button>
 <button class="btn" onclick="printStruk()">🧾 Print</button>
 </div>
@@ -126,6 +164,7 @@ input, select {
 let produk = [];
 let cart = [];
 
+// TAMBAH PRODUK
 function tambahProduk() {
   let barcode = document.getElementById("barcode").value;
   let nama = document.getElementById("nama").value;
@@ -137,7 +176,7 @@ function tambahProduk() {
   produk.push({ barcode, nama, harga, gambar, ukuran, warna });
   tampilkanProduk();
 
-  // RESET FORM 🔥
+  // reset form
   document.getElementById("barcode").value = "";
   document.getElementById("nama").value = "";
   document.getElementById("harga").value = "";
@@ -145,6 +184,7 @@ function tambahProduk() {
   document.getElementById("warna").value = "";
 }
 
+// TAMPILKAN PRODUK
 function tampilkanProduk() {
   let html = "";
   produk.forEach((p, i) => {
@@ -152,12 +192,9 @@ function tampilkanProduk() {
       <div class="card">
         <img src="${p.gambar}">
         <h4>${p.nama}</h4>
-
         <svg id="barcode${i}"></svg>
-
         <p>Rp ${p.harga}</p>
         <small>${p.ukuran} | ${p.warna}</small>
-
         <button class="btn" onclick="tambahCart(${i})">Tambah</button>
       </div>
     `;
@@ -165,24 +202,21 @@ function tampilkanProduk() {
 
   document.getElementById("produkList").innerHTML = html;
 
-  // GENERATE BARCODE 🔥
   produk.forEach((p, i) => {
     if(p.barcode){
-      JsBarcode("#barcode"+i, p.barcode, {
-        format: "CODE128",
-        width: 2,
-        height: 40
-      });
+      JsBarcode("#barcode"+i, p.barcode, { height: 40 });
     }
   });
 }
 
+// TAMBAH CART
 function tambahCart(i) {
   cart.push(produk[i]);
   document.getElementById("totalItem").innerText = cart.length;
   tampilkanCart();
 }
 
+// TAMPILKAN CART
 function tampilkanCart() {
   let html = "";
   cart.forEach((c, i) => {
@@ -204,27 +238,36 @@ function tampilkanCart() {
   });
 }
 
+// HAPUS ITEM
 function hapusItem(i) {
   cart.splice(i,1);
   document.getElementById("totalItem").innerText = cart.length;
   tampilkanCart();
 }
 
-// TOGGLE CART 🔥
+// BUKA CART
 function toggleCart() {
-  let popup = document.getElementById("cartPopup");
-  popup.style.display = popup.style.display === "block" ? "none" : "block";
+  document.getElementById("cartPopup").style.display = "block";
+  document.getElementById("overlay").style.display = "block";
 }
 
+// TUTUP CART
+function tutupCart() {
+  document.getElementById("cartPopup").style.display = "none";
+  document.getElementById("overlay").style.display = "none";
+}
+
+// CHECKOUT
 function checkout() {
   let text = "Pesanan:%0A";
   cart.forEach((c, i) => {
     text += `${i+1}. ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}%0A`;
   });
 
-  window.open("https://wa.me/6282285712293?text=" + text);
+  window.open("https://wa.me/62XXXXXXXXXX?text=" + text);
 }
 
+// PRINT STRUK
 function printStruk() {
   let total = 0;
   let isi = "<h3>TOKO PAKAIAN</h3><hr>";
