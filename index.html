@@ -5,9 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Toko Pakaian</title>
 
+<!-- LIBRARY BARCODE -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
 <style>
 body { font-family: Arial; margin: 0; background: #f5f5f5; }
-header { background: black; color: white; padding: 15px; text-align: center; }
+
+header {
+  background: black;
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
 
 .container { padding: 10px; }
 
@@ -48,6 +57,7 @@ header { background: black; color: white; padding: 15px; text-align: center; }
   border-radius: 50px;
 }
 
+/* Popup */
 .cart-popup {
   position: fixed;
   bottom: 0;
@@ -79,7 +89,7 @@ input, select {
 <div class="container">
 
 <h3>Tambah Produk (Admin)</h3>
-<input id="barcode" placeholder="Barcode">
+<input id="barcode" placeholder="Masukkan angka barcode">
 <input id="nama" placeholder="Nama Produk">
 <input id="harga" placeholder="Harga">
 <input id="gambar" placeholder="Link Gambar">
@@ -102,13 +112,14 @@ input, select {
 
 </div>
 
-<div class="cart-btn" onclick="bukaCart()">🛒 (<span id="totalItem">0</span>)</div>
+<!-- CART -->
+<div class="cart-btn" onclick="toggleCart()">🛒 (<span id="totalItem">0</span>)</div>
 
 <div class="cart-popup" id="cartPopup">
 <h3>Keranjang</h3>
 <div id="cartList"></div>
 <button class="btn" onclick="checkout()">Checkout WA</button>
-<button class="btn" onclick="printStruk()">🧾 Print Struk</button>
+<button class="btn" onclick="printStruk()">🧾 Print</button>
 </div>
 
 <script>
@@ -125,6 +136,13 @@ function tambahProduk() {
 
   produk.push({ barcode, nama, harga, gambar, ukuran, warna });
   tampilkanProduk();
+
+  // RESET FORM 🔥
+  document.getElementById("barcode").value = "";
+  document.getElementById("nama").value = "";
+  document.getElementById("harga").value = "";
+  document.getElementById("gambar").value = "";
+  document.getElementById("warna").value = "";
 }
 
 function tampilkanProduk() {
@@ -134,14 +152,29 @@ function tampilkanProduk() {
       <div class="card">
         <img src="${p.gambar}">
         <h4>${p.nama}</h4>
-        <small>${p.barcode}</small>
+
+        <svg id="barcode${i}"></svg>
+
         <p>Rp ${p.harga}</p>
         <small>${p.ukuran} | ${p.warna}</small>
+
         <button class="btn" onclick="tambahCart(${i})">Tambah</button>
       </div>
     `;
   });
+
   document.getElementById("produkList").innerHTML = html;
+
+  // GENERATE BARCODE 🔥
+  produk.forEach((p, i) => {
+    if(p.barcode){
+      JsBarcode("#barcode"+i, p.barcode, {
+        format: "CODE128",
+        width: 2,
+        height: 40
+      });
+    }
+  });
 }
 
 function tambahCart(i) {
@@ -155,13 +188,20 @@ function tampilkanCart() {
   cart.forEach((c, i) => {
     html += `
       <div class="item">
-        ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}<br>
-        <small>${c.barcode}</small>
+        ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}
+        <br><svg id="cartbarcode${i}"></svg>
         <button onclick="hapusItem(${i})">❌</button>
       </div>
     `;
   });
+
   document.getElementById("cartList").innerHTML = html;
+
+  cart.forEach((c, i) => {
+    if(c.barcode){
+      JsBarcode("#cartbarcode"+i, c.barcode, { height: 30 });
+    }
+  });
 }
 
 function hapusItem(i) {
@@ -170,7 +210,8 @@ function hapusItem(i) {
   tampilkanCart();
 }
 
-function bukaCart() {
+// TOGGLE CART 🔥
+function toggleCart() {
   let popup = document.getElementById("cartPopup");
   popup.style.display = popup.style.display === "block" ? "none" : "block";
 }
@@ -180,23 +221,22 @@ function checkout() {
   cart.forEach((c, i) => {
     text += `${i+1}. ${c.nama} (${c.ukuran}/${c.warna}) - Rp ${c.harga}%0A`;
   });
+
   window.open("https://wa.me/6282285712293?text=" + text);
 }
 
 function printStruk() {
   let total = 0;
-  let isi = "<h3>TOKO PAKAIAN</h3>";
-  isi += "<hr>";
+  let isi = "<h3>TOKO PAKAIAN</h3><hr>";
 
   cart.forEach((c) => {
     isi += `${c.nama}<br>`;
     isi += `${c.ukuran}/${c.warna} - Rp ${c.harga}<br>`;
-    isi += `<small>${c.barcode}</small><br><br>`;
+    isi += `${c.barcode}<br><br>`;
     total += parseInt(c.harga);
   });
 
-  isi += "<hr>";
-  isi += `<b>Total: Rp ${total}</b>`;
+  isi += "<hr><b>Total: Rp " + total + "</b>";
 
   let win = window.open("", "", "width=300,height=500");
   win.document.write(isi);
