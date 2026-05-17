@@ -3,279 +3,933 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toko Pakaian</title>
 
-<!-- Barcode -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<title>FusionOS Mobile UI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-body { font-family: Arial; margin: 0; background: #f5f5f5; }
 
-header {
-  background: #111;
-  color: white;
-  padding: 15px;
-  text-align: center;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
 }
 
-.container { padding: 10px; }
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+body{
+background:
+linear-gradient(
+135deg,
+#020617,
+#0f172a,
+#1e293b
+);
+min-height:100vh;
+overflow:hidden;
+color:white;
 }
 
-.card {
-  background: white;
-  border-radius: 10px;
-  padding: 10px;
+/* SPLASH */
+
+#splash{
+
+position:fixed;
+inset:0;
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+
+background:
+linear-gradient(
+135deg,
+#020617,
+#0f172a,
+#1e293b
+);
+
+z-index:999;
+
+transition:1s;
 }
 
-.card img {
-  width: 100%;
-  border-radius: 10px;
+.logo{
+
+width:120px;
+height:120px;
+
+border-radius:30px;
+
+background:
+linear-gradient(
+135deg,
+#38bdf8,
+#6366f1
+);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:42px;
+font-weight:800;
+
+box-shadow:
+0 20px 40px rgba(0,0,0,.4);
+
+animation:
+float 2s infinite ease-in-out;
+
 }
 
-.btn {
-  background: #007bff;
-  color: white;
-  padding: 6px;
-  border: none;
-  width: 100%;
-  margin-top: 5px;
-  border-radius: 6px;
-  font-size: 13px;
+@keyframes float{
+
+0%{
+transform:translateY(0);
 }
 
-.cart-btn {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  background: #28a745;
-  color: white;
-  padding: 10px 14px;
-  border-radius: 30px;
+50%{
+transform:translateY(-12px);
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  background: rgba(0,0,0,0.5);
+100%{
+transform:translateY(0);
 }
 
-.cart-popup {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  max-height: 70%;
-  overflow: auto;
-  display: none;
-  padding: 15px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
 }
 
-.item {
-  border-bottom: 1px solid #ddd;
-  padding: 8px;
+.splash-title{
+
+margin-top:25px;
+font-size:32px;
+font-weight:800;
+
+background:
+linear-gradient(
+to right,
+#38bdf8,
+#818cf8
+);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
 }
 
-.close-btn {
-  background: red;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  float: right;
-  border-radius: 5px;
+.splash-sub{
+
+margin-top:10px;
+color:#94a3b8;
+
 }
 
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin: 5px 0;
+/* APP */
+
+.app{
+
+display:none;
+flex-direction:column;
+height:100vh;
+
 }
+
+/* TOPBAR */
+
+.topbar{
+
+padding:18px 20px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+}
+
+.time{
+font-size:34px;
+font-weight:700;
+}
+
+.status{
+font-size:14px;
+color:#94a3b8;
+}
+
+/* SEARCH */
+
+.search-box{
+padding:0 20px;
+}
+
+.search-box input{
+
+width:100%;
+padding:15px;
+
+border:none;
+border-radius:18px;
+
+background:
+rgba(255,255,255,.08);
+
+backdrop-filter:blur(20px);
+
+color:white;
+font-size:15px;
+
+}
+
+/* APPS GRID */
+
+.apps{
+
+flex:1;
+
+padding:25px;
+
+display:grid;
+
+grid-template-columns:
+repeat(4,1fr);
+
+gap:25px;
+
+overflow:auto;
+
+}
+
+.app-icon{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.app-icon:active{
+transform:scale(.92);
+}
+
+.icon{
+
+width:72px;
+height:72px;
+
+border-radius:24px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:34px;
+
+margin-bottom:10px;
+
+box-shadow:
+0 12px 25px rgba(0,0,0,.3);
+
+}
+
+.app-name{
+
+font-size:13px;
+text-align:center;
+
+}
+
+/* COLORS */
+
+.blue{
+background:linear-gradient(135deg,#38bdf8,#2563eb);
+}
+
+.green{
+background:linear-gradient(135deg,#4ade80,#16a34a);
+}
+
+.red{
+background:linear-gradient(135deg,#fb7185,#e11d48);
+}
+
+.orange{
+background:linear-gradient(135deg,#fb923c,#ea580c);
+}
+
+.purple{
+background:linear-gradient(135deg,#a78bfa,#7c3aed);
+}
+
+.yellow{
+background:linear-gradient(135deg,#facc15,#ca8a04);
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+
+height:80px;
+
+display:flex;
+justify-content:space-around;
+align-items:center;
+
+background:
+rgba(255,255,255,.06);
+
+backdrop-filter:blur(20px);
+
+border-top:
+1px solid rgba(255,255,255,.08);
+
+}
+
+.nav-btn{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+font-size:12px;
+
+color:#cbd5e1;
+
+cursor:pointer;
+
+}
+
+.nav-icon{
+font-size:24px;
+margin-bottom:5px;
+}
+
+/* FLOAT BTN */
+
+.fab{
+
+position:fixed;
+
+right:25px;
+bottom:95px;
+
+width:65px;
+height:65px;
+
+border-radius:50%;
+
+background:
+linear-gradient(
+135deg,
+#38bdf8,
+#6366f1
+);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:34px;
+
+box-shadow:
+0 15px 30px rgba(0,0,0,.4);
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.fab:active{
+transform:scale(.9);
+}
+
+/* NOTIFICATION */
+
+.toast{
+
+position:fixed;
+
+top:25px;
+left:50%;
+
+transform:translateX(-50%);
+
+background:
+rgba(15,23,42,.95);
+
+padding:14px 22px;
+
+border-radius:14px;
+
+backdrop-filter:blur(20px);
+
+display:none;
+
+z-index:9999;
+
+}
+
+/* APP PAGE */
+
+.page{
+
+position:fixed;
+inset:0;
+
+background:#0f172a;
+
+padding:25px;
+
+display:none;
+
+overflow:auto;
+
+z-index:500;
+
+}
+
+.page-header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:30px;
+
+}
+
+.back-btn{
+
+width:45px;
+height:45px;
+
+border-radius:14px;
+
+background:
+rgba(255,255,255,.08);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+
+font-size:22px;
+
+}
+
+.page-title{
+
+font-size:28px;
+font-weight:700;
+
+}
+
+/* CARDS */
+
+.card{
+
+background:
+rgba(255,255,255,.06);
+
+padding:20px;
+
+border-radius:24px;
+
+margin-bottom:20px;
+
+backdrop-filter:blur(20px);
+
+}
+
+.card h3{
+margin-bottom:10px;
+}
+
+.card p{
+color:#cbd5e1;
+line-height:1.7;
+}
+
+.music-player{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+}
+
+.play-btn{
+
+width:60px;
+height:60px;
+
+border-radius:50%;
+
+background:
+linear-gradient(
+135deg,
+#38bdf8,
+#6366f1
+);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:26px;
+
+cursor:pointer;
+
+}
+
 </style>
 </head>
 
 <body>
 
-<header>🛍️ TOKO PAKAIAN</header>
+<!-- SPLASH -->
 
-<div class="container">
+<div id="splash">
 
-<h3>Tambah Produk</h3>
-<input id="barcode" placeholder="Barcode">
-<input id="nama" placeholder="Nama Produk">
-<input id="harga" placeholder="Harga">
-<input id="gambar" placeholder="Link Gambar">
+<div class="logo">
+F
+</div>
 
-<select id="ukuran">
-<option>S</option>
-<option>L</option>
-<option>XL</option>
-<option>XXL</option>
-</select>
+<div class="splash-title">
+FusionOS
+</div>
 
-<input id="warna" placeholder="Warna">
-
-<button class="btn" onclick="tambahProduk()">Tambah Produk</button>
-
-<hr>
-
-<h3>Katalog</h3>
-<div class="grid" id="produkList"></div>
+<div class="splash-sub">
+Android Style Web UI
+</div>
 
 </div>
 
-<div class="cart-btn" onclick="toggleCart()">
-🛒 (<span id="totalItem">0</span>)
+<!-- APP -->
+
+<div class="app" id="app">
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+<div>
+
+<div class="time" id="clock">
+12:00
 </div>
 
-<div class="overlay" id="overlay" onclick="tutupCart()"></div>
-
-<div class="cart-popup" id="cartPopup">
-<button class="close-btn" onclick="tutupCart()">Tutup</button>
-<h3>Keranjang</h3>
-
-<div id="cartList"></div>
-
-<button class="btn" onclick="checkout()">Checkout WA</button>
-<button class="btn" onclick="printStruk()">🧾 Print</button>
+<div class="status">
+Connected • Premium UI
 </div>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</div>
+
+<div style="font-size:28px;">
+🔋
+</div>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="search-box">
+
+<input
+type="text"
+placeholder="Search apps..."
+>
+
+</div>
+
+<!-- APPS -->
+
+<div class="apps">
+
+<div class="app-icon" onclick="openPage('chatPage')">
+
+<div class="icon blue">
+💬
+</div>
+
+<div class="app-name">
+Chat
+</div>
+
+</div>
+
+<div class="app-icon" onclick="openPage('musicPage')">
+
+<div class="icon purple">
+🎵
+</div>
+
+<div class="app-name">
+Music
+</div>
+
+</div>
+
+<div class="app-icon" onclick="openPage('galleryPage')">
+
+<div class="icon orange">
+🖼
+</div>
+
+<div class="app-name">
+Gallery
+</div>
+
+</div>
+
+<div class="app-icon" onclick="openPage('settingsPage')">
+
+<div class="icon green">
+⚙
+</div>
+
+<div class="app-name">
+Settings
+</div>
+
+</div>
+
+<div class="app-icon">
+
+<div class="icon red">
+📷
+</div>
+
+<div class="app-name">
+Camera
+</div>
+
+</div>
+
+<div class="app-icon">
+
+<div class="icon yellow">
+📁
+</div>
+
+<div class="app-name">
+Files
+</div>
+
+</div>
+
+<div class="app-icon">
+
+<div class="icon blue">
+🌐
+</div>
+
+<div class="app-name">
+Browser
+</div>
+
+</div>
+
+<div class="app-icon">
+
+<div class="icon green">
+📞
+</div>
+
+<div class="app-name">
+Phone
+</div>
+
+</div>
+
+</div>
+
+<!-- FLOAT -->
+
+<div class="fab" onclick="showToast()">
++
+</div>
+
+<!-- NAV -->
+
+<div class="bottom-nav">
+
+<div class="nav-btn">
+<div class="nav-icon">🏠</div>
+Home
+</div>
+
+<div class="nav-btn">
+<div class="nav-icon">🔍</div>
+Search
+</div>
+
+<div class="nav-btn">
+<div class="nav-icon">❤️</div>
+Favorite
+</div>
+
+<div class="nav-btn">
+<div class="nav-icon">👤</div>
+Profile
+</div>
+
+</div>
+
+</div>
+
+<!-- TOAST -->
+
+<div class="toast" id="toast">
+✨ FusionOS Notification
+</div>
+
+<!-- CHAT PAGE -->
+
+<div class="page" id="chatPage">
+
+<div class="page-header">
+
+<div class="back-btn"
+onclick="closePage('chatPage')">
+
+←
+
+</div>
+
+<div class="page-title">
+Chat App
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>
+💬 AI Assistant
+</h3>
+
+<p>
+Welcome to FusionOS Chat Interface.
+Modern Android style UI with glassmorphism.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>
+🚀 Features
+</h3>
+
+<p>
+Realtime UI, animations, premium mobile experience and futuristic design.
+</p>
+
+</div>
+
+</div>
+
+<!-- MUSIC PAGE -->
+
+<div class="page" id="musicPage">
+
+<div class="page-header">
+
+<div class="back-btn"
+onclick="closePage('musicPage')">
+
+←
+
+</div>
+
+<div class="page-title">
+Music Player
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="music-player">
+
+<div>
+
+<h3>
+Night Vibes
+</h3>
+
+<p>
+FusionOS Music
+</p>
+
+</div>
+
+<div class="play-btn">
+▶
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- GALLERY -->
+
+<div class="page" id="galleryPage">
+
+<div class="page-header">
+
+<div class="back-btn"
+onclick="closePage('galleryPage')">
+
+←
+
+</div>
+
+<div class="page-title">
+Gallery
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>
+🖼 Gallery UI
+</h3>
+
+<p>
+Modern image gallery placeholder.
+</p>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+
+<div class="page" id="settingsPage">
+
+<div class="page-header">
+
+<div class="back-btn"
+onclick="closePage('settingsPage')">
+
+←
+
+</div>
+
+<div class="page-title">
+Settings
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>
+🌙 Dark Mode
+</h3>
+
+<p>
+FusionOS already uses premium dark UI.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>
+📱 Device
+</h3>
+
+<p>
+Android Style Progressive Web UI.
+</p>
+
+</div>
+
+</div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDruQxhQfsmsDAubunSrohBX9ZALlXtp5E",
-  authDomain: "toko-pakaian-91050.firebaseapp.com",
-  projectId: "toko-pakaian-91050",
-};
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+/* SPLASH */
 
-let cart = [];
+setTimeout(()=>{
 
-// TAMBAH PRODUK
-function tambahProduk() {
-  db.collection("produk").add({
-    barcode: barcode.value,
-    nama: nama.value,
-    harga: harga.value,
-    gambar: gambar.value,
-    ukuran: ukuran.value,
-    warna: warna.value
-  });
+splash.style.opacity='0';
 
-  barcode.value="";
-  nama.value="";
-  harga.value="";
-  gambar.value="";
-  warna.value="";
+setTimeout(()=>{
+
+splash.style.display='none';
+
+app.style.display='flex';
+
+},1000);
+
+},2200);
+
+/* CLOCK */
+
+function updateClock(){
+
+const now=new Date();
+
+let h=
+String(now.getHours())
+.padStart(2,'0');
+
+let m=
+String(now.getMinutes())
+.padStart(2,'0');
+
+clock.innerText=
+`${h}:${m}`;
+
 }
 
-// TAMPILKAN PRODUK
-function tampilkanProduk() {
-  db.collection("produk").onSnapshot((snapshot)=>{
-    let html="";
+setInterval(updateClock,1000);
 
-    snapshot.forEach(doc=>{
-      let p = doc.data();
+updateClock();
 
-      html+=`
-      <div class="card">
-        <img src="${p.gambar}">
-        <h4>${p.nama}</h4>
-        <svg id="b${doc.id}"></svg>
-        <p>Rp ${p.harga}</p>
-        <small>${p.ukuran} | ${p.warna}</small>
-        <button class="btn" onclick='tambahCart(${JSON.stringify(p)})'>Tambah</button>
-      </div>`;
-    });
+/* TOAST */
 
-    produkList.innerHTML = html;
+function showToast(){
 
-    snapshot.forEach(doc=>{
-      let p = doc.data();
-      if(p.barcode){
-        JsBarcode("#b"+doc.id, p.barcode);
-      }
-    });
-  });
+toast.style.display='block';
+
+setTimeout(()=>{
+
+toast.style.display='none';
+
+},2200);
+
 }
 
-// CART
-function tambahCart(p){
-  cart.push(p);
-  totalItem.innerText = cart.length;
-  tampilkanCart();
+/* PAGE */
+
+function openPage(id){
+
+document.getElementById(id)
+.style.display='block';
+
 }
 
-function tampilkanCart(){
-  let html="";
-  cart.forEach((c,i)=>{
-    html+=`
-    <div class="item">
-      ${c.nama} - Rp ${c.harga}
-      <button onclick="hapusItem(${i})">❌</button>
-    </div>`;
-  });
-  cartList.innerHTML = html;
+function closePage(id){
+
+document.getElementById(id)
+.style.display='none';
+
 }
 
-function hapusItem(i){
-  cart.splice(i,1);
-  totalItem.innerText = cart.length;
-  tampilkanCart();
-}
-
-function toggleCart(){
-  cartPopup.style.display="block";
-  overlay.style.display="block";
-}
-
-function tutupCart(){
-  cartPopup.style.display="none";
-  overlay.style.display="none";
-}
-
-// CHECKOUT
-function checkout(){
-  let text="Pesanan:%0A";
-  cart.forEach((c,i)=>{
-    text+=`${i+1}. ${c.nama} - Rp ${c.harga}%0A`;
-  });
-  window.open("https://wa.me/6282285712293?text="+text);
-}
-
-// PRINT
-function printStruk(){
-  let total=0;
-  let isi="TOKO PAKAIAN<hr>";
-
-  cart.forEach(c=>{
-    isi+=`${c.nama} - Rp ${c.harga}<br>`;
-    total+=parseInt(c.harga);
-  });
-
-  isi+=`<hr>Total: Rp ${total}`;
-
-  let w=window.open("","","width=300,height=500");
-  w.document.write(isi);
-  w.print();
-}
-
-// LOAD DATA
-tampilkanProduk();
 </script>
 
 </body>
